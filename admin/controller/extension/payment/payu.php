@@ -11,17 +11,17 @@ class ControllerExtensionPaymentPayu extends Controller {
         $this->document->setTitle($this->language->get('heading_title'));
 
         $this->load->model('setting/setting');
-
+        
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+            
             $this->model_setting_setting->editSetting('payu', $this->request->post);
-
+            
             $this->session->data['success'] = $this->language->get('text_success');
-
-            $this->response->redirect($this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'], 'SSL'));
+            
+            $this->response->redirect($this->url->link('extension/payment/payu', 'user_token=' . $this->session->data['user_token'], 'SSL'));
         }
-
         $data['heading_title'] = $this->language->get('heading_title');
-
+        
         $data['text_enabled'] = $this->language->get('text_enabled');
         $data['text_disabled'] = $this->language->get('text_disabled');
         $data['text_all_zones'] = $this->language->get('text_all_zones');
@@ -209,7 +209,7 @@ class ControllerExtensionPaymentPayu extends Controller {
         } else {
             $data['error_salt'] = '';
         }
-
+        
         $data['breadcrumbs'] = array();
 
         $data['breadcrumbs'][] = array(
@@ -278,10 +278,10 @@ class ControllerExtensionPaymentPayu extends Controller {
         
         $data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
         
-        if (isset($this->request->post['payu_status'])) {
-            $data['payu_status'] = $this->request->post['payu_status'];
+        if (isset($this->request->post['payu_payment_status'])) {
+            $data['payu_payment_status'] = $this->request->post['payu_payment_status'];
         } else {
-            $data['payu_status'] = $this->config->get('payu_status');
+            $data['payu_payment_status'] = $this->config->get('payu_payment_status');
         }
         
         if (isset($this->request->post['payu_payment_gateway'])) {
@@ -289,7 +289,7 @@ class ControllerExtensionPaymentPayu extends Controller {
         } else {
             $data['payu_payment_gateway'] = $this->config->get('payu_payment_gateway');
         }
-
+        
         if (isset($this->request->post['payu_sort_order'])) {
             $data['payu_sort_order'] = $this->request->post['payu_sort_order'];
         } else {
@@ -303,6 +303,7 @@ class ControllerExtensionPaymentPayu extends Controller {
     }
 
     private function validate() {
+        
         if (!$this->user->hasPermission('modify', 'extension/payment/payu')) {
             $this->error['warning'] = $this->language->get('error_permission');
             var_dump('hell yeah');die;

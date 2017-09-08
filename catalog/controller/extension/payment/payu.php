@@ -72,11 +72,11 @@ class ControllerExtensionPaymentPayu extends Controller {
         $data['Hash'] = $Hash;
         $data['ismobileview'] = self::is_mobile();
         /////////////////////////////////////End Payu Vital  Information /////////////////////////////////
-        return $this->load->view('extension/payment/payu', $data);
+        return $this->load->view('extension/payment/payubiz', $data);
     }
 
     public function callback() {
-
+        
         if (isset($this->request->post['key']) && ($this->request->post['key'] == $this->config->get('payu_merchant'))) {
             $this->language->load('extension/payment/payu');
 
@@ -104,7 +104,6 @@ class ControllerExtensionPaymentPayu extends Controller {
             $this->load->model('checkout/order');
             $orderid = $this->request->post['txnid'] - 9909110;
 
-
             $key = $this->request->post['key'];
             $amount = $this->request->post['amount'];
             $productInfo = $this->request->post['productinfo'];
@@ -131,9 +130,7 @@ class ControllerExtensionPaymentPayu extends Controller {
                     $message .= $k . ': ' . $val . "\n";
                 }
                 if ($sentHashString == $responseHashString) {
-
                     if ($this->request->post['unmappedstatus'] == 'captured') {
-
                         $payu_captured_order_status_id = $this->config->get('payu_captured_order_status_id');
                         $this->model_checkout_order->addOrderHistory($orderid, $payu_captured_order_status_id);
                     } elseif ($this->request->post['unmappedstatus'] == 'auth') {
@@ -149,26 +146,26 @@ class ControllerExtensionPaymentPayu extends Controller {
                     $data['content_bottom'] = $this->load->controller('common/content_bottom');
                     $data['footer'] = $this->load->controller('common/footer');
                     $data['header'] = $this->load->controller('common/header');
-
+                    
                     $this->response->setOutput($this->load->view('extension/payment/payu_success', $data));
                 }
             } else {
-
+                
                 $data['continue'] = $this->url->link('checkout/cart');
-                $data['column_left'] = $this->load->controller('common/column_left');
-                $data['column_right'] = $this->load->controller('common/column_right');
+                //$data['column_left'] = $this->load->controller('common/column_left');
+                //$data['column_right'] = $this->load->controller('common/column_right');
                 $data['content_top'] = $this->load->controller('common/content_top');
                 $data['content_bottom'] = $this->load->controller('common/content_bottom');
                 $data['footer'] = $this->load->controller('common/footer');
                 $data['header'] = $this->load->controller('common/header');
-
+                
                 if (isset($this->request->post['status']) && $this->request->post['unmappedstatus'] == 'userCancelled') {
                     $payu_user_cancelled_order_status_id = $this->config->get('payu_user_cancelled_order_status_id');
                     $this->model_checkout_order->addOrderHistory($orderid, $payu_user_cancelled_order_status_id);
-
+                    
                     $payu_cancelled_order_status_id = $this->config->get('payu_cancelled_order_status_id');
                     $this->model_checkout_order->addOrderHistory($orderid, $payu_cancelled_order_status_id);
-
+                    
                     $this->response->setOutput($this->load->view('extension/payment/payu_cancelled', $data));
                 } else {
                     $this->response->setOutput($this->load->view('extension/payment/payu_failure', $data));
@@ -177,7 +174,6 @@ class ControllerExtensionPaymentPayu extends Controller {
         }
 
         if ($this->request->post['unmappedstatus'] == 'initiated') {
-
             $payu_initiated_order_status_id = $this->config->get('payu_initiated_order_status_id');
             $this->model_checkout_order->addOrderHistory($orderid, $payu_initiated_order_status_id);
         } elseif ($this->request->post['unmappedstatus'] == 'in progress') {
