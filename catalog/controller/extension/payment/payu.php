@@ -8,7 +8,7 @@ class ControllerExtensionPaymentPayu extends Controller {
         $this->language->load('extension/payment/payu');
         $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
-        $data['merchant'] = $this->config->get('payu_merchant');
+        $data['merchant'] = $this->config->get('payment_payu_merchant');
 
         $currency_code = $order_info['currency_code'];
 
@@ -29,7 +29,7 @@ class ControllerExtensionPaymentPayu extends Controller {
 
         /////////////////////////////////////Start Payu Vital  Information /////////////////////////////////
 
-        if ($this->config->get('payu_test') == 'demo') {
+        if ($this->config->get('payment_payu_test') == 'demo') {
             $data['action'] = 'https://test.payu.in/_payment';
         } else {
             $data['action'] = 'https://secure.payu.in/_payment';
@@ -38,8 +38,8 @@ class ControllerExtensionPaymentPayu extends Controller {
         $txnid = $this->session->data['order_id'] + 9909110;
 
 
-        $data['key'] = $this->config->get('payu_merchant');
-        $data['salt'] = $this->config->get('payu_salt');
+        $data['key'] = $this->config->get('payment_payu_merchant');
+        $data['salt'] = $this->config->get('payment_payu_salt');
         $data['txnid'] = $txnid;
         $data['amount'] = $calculatedAmount_INR;
         $data['productinfo'] = 'opencart products information';
@@ -53,35 +53,35 @@ class ControllerExtensionPaymentPayu extends Controller {
         $data['state'] = $order_info['payment_zone'];
         $data['city'] = $order_info['payment_city'];
         $data['country'] = $order_info['payment_country'];
-        $data['pg'] = $this->config->get('payu_payment_gateway');
-        $data['bankcode'] = $this->config->get('payu_bankcode_val');
-
+        $data['pg'] = $this->config->get('payment_payu_payment_gateway');
+        $data['bankcode'] = $this->config->get('payment_payu_bankcode_val');
+		
         $data['surl'] = $this->url->link('extension/payment/payu/callback'); //HTTP_SERVER.'/index.php?route=payment/payu/callback';
         $data['Furl'] = $this->url->link('extension/payment/payu/callback'); //HTTP_SERVER.'/index.php?route=payment/payu/callback';
         $data['curl'] = $this->url->link('extension/payment/payu/callback');
-        $key = $this->config->get('payu_merchant');
-
+        $key = $this->config->get('payment_payu_merchant');
+		
         $productInfo = $data['productinfo'];
         $firstname = $order_info['payment_firstname'];
         $email = $order_info['email'];
-        $salt = $this->config->get('payu_salt');
-
+        $salt = $this->config->get('payment_payu_salt');
+		
         $Hash = hash('sha512', $key . '|' . $txnid . '|' . $calculatedAmount_INR . '|' . $productInfo . '|' . $firstname . '|' . $email . '|||||||||||' . $salt);
-
+		
         $data['user_credentials'] = $this->data['key'] . ':' . $this->data['email'];
         $data['Hash'] = $Hash;
         $data['ismobileview'] = self::is_mobile();
         /////////////////////////////////////End Payu Vital  Information /////////////////////////////////
-        return $this->load->view('extension/payment/payubiz', $data);
+        return $this->load->view('extension/payment/payu', $data);
     }
-
+	
     public function callback() {
-        
-        if (isset($this->request->post['key']) && ($this->request->post['key'] == $this->config->get('payu_merchant'))) {
+	
+        if (isset($this->request->post['key']) && ($this->request->post['key'] == $this->config->get('payment_payu_merchant'))) {
             $this->language->load('extension/payment/payu');
-
+		
             $data['title'] = sprintf($this->language->get('heading_title'), $this->config->get('config_name'));
-
+			
             if (!isset($this->request->server['HTTPS']) || ($this->request->server['HTTPS'] != 'on')) {
                 $data['base'] = HTTP_SERVER;
             } else {
@@ -109,7 +109,7 @@ class ControllerExtensionPaymentPayu extends Controller {
             $productInfo = $this->request->post['productinfo'];
             $firstname = $this->request->post['firstname'];
             $email = $this->request->post['email'];
-            $salt = $this->config->get('payu_salt');
+            $salt = $this->config->get('payment_payu_salt');
             $txnid = $this->request->post['txnid'];
             $keyString = $key . '|' . $txnid . '|' . $amount . '|' . $productInfo . '|' . $firstname . '|' . $email . '||||||||||';
             $keyArray = explode("|", $keyString);
@@ -130,15 +130,17 @@ class ControllerExtensionPaymentPayu extends Controller {
                     $message .= $k . ': ' . $val . "\n";
                 }
                 if ($sentHashString == $responseHashString) {
+
                     if ($this->request->post['unmappedstatus'] == 'captured') {
-                        $payu_captured_order_status_id = $this->config->get('payu_captured_order_status_id');
+
+                        $payu_captured_order_status_id = $this->config->get('payment_payu_captured_order_status_id');
                         $this->model_checkout_order->addOrderHistory($orderid, $payu_captured_order_status_id);
                     } elseif ($this->request->post['unmappedstatus'] == 'auth') {
-                        $payu_auth_order_status_id = $this->config->get('payu_auth_order_status_id');
+                        $payu_auth_order_status_id = $this->config->get('payment_payu_auth_order_status_id');
                         $this->model_checkout_order->addOrderHistory($orderid, $payu_auth_order_status_id);
                     }
 
-                    $this->model_checkout_order->addOrderHistory($this->request->post['txnid'], $this->config->get('payu_order_status_id'), $message, false);
+                    $this->model_checkout_order->addOrderHistory($this->request->post['txnid'], $this->config->get('payment_payu_order_status_id'), $message, false);
                     $data['continue'] = $this->url->link('checkout/success');
                     $data['column_left'] = $this->load->controller('common/column_left');
                     $data['column_right'] = $this->load->controller('common/column_right');
@@ -146,26 +148,26 @@ class ControllerExtensionPaymentPayu extends Controller {
                     $data['content_bottom'] = $this->load->controller('common/content_bottom');
                     $data['footer'] = $this->load->controller('common/footer');
                     $data['header'] = $this->load->controller('common/header');
-                    
+
                     $this->response->setOutput($this->load->view('extension/payment/payu_success', $data));
                 }
             } else {
-                
+
                 $data['continue'] = $this->url->link('checkout/cart');
-                //$data['column_left'] = $this->load->controller('common/column_left');
-                //$data['column_right'] = $this->load->controller('common/column_right');
+                $data['column_left'] = $this->load->controller('common/column_left');
+                $data['column_right'] = $this->load->controller('common/column_right');
                 $data['content_top'] = $this->load->controller('common/content_top');
                 $data['content_bottom'] = $this->load->controller('common/content_bottom');
                 $data['footer'] = $this->load->controller('common/footer');
                 $data['header'] = $this->load->controller('common/header');
-                
+
                 if (isset($this->request->post['status']) && $this->request->post['unmappedstatus'] == 'userCancelled') {
-                    $payu_user_cancelled_order_status_id = $this->config->get('payu_user_cancelled_order_status_id');
+                    $payu_user_cancelled_order_status_id = $this->config->get('payment_payu_user_cancelled_order_status_id');
                     $this->model_checkout_order->addOrderHistory($orderid, $payu_user_cancelled_order_status_id);
-                    
-                    $payu_cancelled_order_status_id = $this->config->get('payu_cancelled_order_status_id');
+
+                    $payu_cancelled_order_status_id = $this->config->get('payment_payu_cancelled_order_status_id');
                     $this->model_checkout_order->addOrderHistory($orderid, $payu_cancelled_order_status_id);
-                    
+
                     $this->response->setOutput($this->load->view('extension/payment/payu_cancelled', $data));
                 } else {
                     $this->response->setOutput($this->load->view('extension/payment/payu_failure', $data));
@@ -174,22 +176,23 @@ class ControllerExtensionPaymentPayu extends Controller {
         }
 
         if ($this->request->post['unmappedstatus'] == 'initiated') {
-            $payu_initiated_order_status_id = $this->config->get('payu_initiated_order_status_id');
+
+            $payu_initiated_order_status_id = $this->config->get('payment_payu_initiated_order_status_id');
             $this->model_checkout_order->addOrderHistory($orderid, $payu_initiated_order_status_id);
         } elseif ($this->request->post['unmappedstatus'] == 'in progress') {
-            $payu_inprogress_order_status_id = $this->config->get('payu_inprogress_order_status_id');
+            $payu_inprogress_order_status_id = $this->config->get('payment_payu_inprogress_order_status_id');
             $this->model_checkout_order->addOrderHistory($orderid, $payu_inprogress_order_status_id);
         } elseif ($this->request->post['unmappedstatus'] == 'dropped') {
-            $payu_dropped_order_status_id = $this->config->get('payu_dropped_order_status_id');
+            $payu_dropped_order_status_id = $this->config->get('payment_payu_dropped_order_status_id');
             $this->model_checkout_order->addOrderHistory($orderid, $payu_dropped_order_status_id);
         } elseif ($this->request->post['unmappedstatus'] == 'bounced') {
-            $payu_bounced_order_status_id = $this->config->get('payu_bounced_order_status_id');
+            $payu_bounced_order_status_id = $this->config->get('payment_payu_bounced_order_status_id');
             $this->model_checkout_order->addOrderHistory($orderid, $payu_bounced_order_status_id);
         } elseif ($this->request->post['unmappedstatus'] == 'failed') {
-            $payu_failed_order_status_id = $this->config->get('payu_failed_order_status_id');
+            $payu_failed_order_status_id = $this->config->get('payment_payu_failed_order_status_id');
             $this->model_checkout_order->addOrderHistory($orderid, $payu_failed_order_status_id);
         } elseif ($this->request->post['unmappedstatus'] == 'pending') {
-            $payu_pending_order_status_id = $this->config->get('payu_pending_order_status_id');
+            $payu_pending_order_status_id = $this->config->get('payment_payu_pending_order_status_id');
             $this->model_checkout_order->addOrderHistory($orderid, $payu_pending_order_status_id);
         }
 
@@ -201,7 +204,7 @@ class ControllerExtensionPaymentPayu extends Controller {
      * Test if the current browser runs on a mobile device (smart phone, tablet, etc.)
      *
      * @return bool
-     */
+     **/
     private static function is_mobile() {
         if (empty($_SERVER['HTTP_USER_AGENT'])) {
             $is_mobile = false;

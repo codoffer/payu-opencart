@@ -7,21 +7,21 @@ class ControllerExtensionPaymentPayu extends Controller {
 
     public function index() {
         $this->load->language('extension/payment/payu');
-
+		
         $this->document->setTitle($this->language->get('heading_title'));
-
+		
         $this->load->model('setting/setting');
-        
+		
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-            
-            $this->model_setting_setting->editSetting('payu', $this->request->post);
-            
+            $this->model_setting_setting->editSetting('payment_payu', $this->request->post);
+
             $this->session->data['success'] = $this->language->get('text_success');
-            
+
             $this->response->redirect($this->url->link('extension/payment/payu', 'user_token=' . $this->session->data['user_token'], 'SSL'));
         }
+		
         $data['heading_title'] = $this->language->get('heading_title');
-        
+
         $data['text_enabled'] = $this->language->get('text_enabled');
         $data['text_disabled'] = $this->language->get('text_disabled');
         $data['text_all_zones'] = $this->language->get('text_all_zones');
@@ -127,69 +127,69 @@ class ControllerExtensionPaymentPayu extends Controller {
         $data['payu_bankcode'][53] = array('value' => 'YESB', 'name' => 'Yes Bank');
 
 
-        if (isset($this->request->post['payu_captured_order_status_id'])) {
-            $data['payu_captured_order_status_id'] = $this->request->post['payu_captured_order_status_id'];
+        if (isset($this->request->post['payment_payu_captured_order_status_id'])) {
+            $data['payment_payu_captured_order_status_id'] = $this->request->post['payment_payu_captured_order_status_id'];
         } else {
-            $data['payu_captured_order_status_id'] = $this->config->get('payu_captured_order_status_id');
+            $data['payment_payu_captured_order_status_id'] = $this->config->get('payment_payu_captured_order_status_id');
         }
-        if (isset($this->request->post['payu_bounced_order_status_id'])) {
-            $data['payu_bounced_order_status_id'] = $this->request->post['payu_bounced_order_status_id'];
+        if (isset($this->request->post['payment_payu_bounced_order_status_id'])) {
+            $data['payment_payu_bounced_order_status_id'] = $this->request->post['payment_payu_bounced_order_status_id'];
         } else {
-            $data['payu_bounced_order_status_id'] = $this->config->get('payu_bounced_order_status_id');
-        }
-
-        if (isset($this->request->post['payu_auth_order_status_id'])) {
-            $data['payu_auth_order_status_id'] = $this->request->post['payu_auth_order_status_id'];
-        } else {
-            $data['payu_auth_order_status_id'] = $this->config->get('payu_auth_order_status_id');
+            $data['payment_payu_bounced_order_status_id'] = $this->config->get('payment_payu_bounced_order_status_id');
         }
 
-        if (isset($this->request->post['payu_dropped_order_status_id'])) {
-            $data['payu_dropped_order_status_id'] = $this->request->post['payu_dropped_order_status_id'];
+        if (isset($this->request->post['payment_payu_auth_order_status_id'])) {
+            $data['payment_payu_auth_order_status_id'] = $this->request->post['payment_payu_auth_order_status_id'];
         } else {
-            $data['payu_dropped_order_status_id'] = $this->config->get('payu_dropped_order_status_id');
+            $data['payment_payu_auth_order_status_id'] = $this->config->get('payment_payu_auth_order_status_id');
         }
 
-        if (isset($this->request->post['payu_failed_order_status_id'])) {
-            $data['payu_failed_order_status_id'] = $this->request->post['payu_failed_order_status_id'];
+        if (isset($this->request->post['payment_payu_dropped_order_status_id'])) {
+            $data['payment_payu_dropped_order_status_id'] = $this->request->post['payment_payu_dropped_order_status_id'];
         } else {
-            $data['payu_failed_order_status_id'] = $this->config->get('payu_failed_order_status_id');
+            $data['payment_payu_dropped_order_status_id'] = $this->config->get('payment_payu_dropped_order_status_id');
         }
 
-        if (isset($this->request->post['payu_user_cancelled_order_status_id'])) {
-            $data['payu_user_cancelled_order_status_id'] = $this->request->post['payu_user_cancelled_order_status_id'];
+        if (isset($this->request->post['payment_payu_failed_order_status_id'])) {
+            $data['payment_payu_failed_order_status_id'] = $this->request->post['payment_payu_failed_order_status_id'];
         } else {
-            $data['payu_user_cancelled_order_status_id'] = $this->config->get('payu_user_cancelled_order_status_id');
+            $data['payment_payu_failed_order_status_id'] = $this->config->get('payment_payu_failed_order_status_id');
         }
 
-        if (isset($this->request->post['payu_inprogress_order_status_id'])) {
-            $data['payu_inprogress_order_status_id'] = $this->request->post['payu_inprogress_order_status_id'];
+        if (isset($this->request->post['payment_payu_user_cancelled_order_status_id'])) {
+            $data['payment_payu_user_cancelled_order_status_id'] = $this->request->post['payment_payu_user_cancelled_order_status_id'];
         } else {
-            $data['payu_inprogress_order_status_id'] = $this->config->get('payu_inprogress_order_status_id');
+            $data['payment_payu_user_cancelled_order_status_id'] = $this->config->get('payment_payu_user_cancelled_order_status_id');
         }
 
-        if (isset($this->request->post['payu_initiated_order_status_id'])) {
-            $data['payu_initiated_order_status_id'] = $this->request->post['payu_initiated_order_status_id'];
+        if (isset($this->request->post['payment_payu_inprogress_order_status_id'])) {
+            $data['payment_payu_inprogress_order_status_id'] = $this->request->post['payment_payu_inprogress_order_status_id'];
         } else {
-            $data['payu_initiated_order_status_id'] = $this->config->get('payu_initiated_order_status_id');
+            $data['payment_payu_inprogress_order_status_id'] = $this->config->get('payment_payu_inprogress_order_status_id');
         }
 
-        if (isset($this->request->post['payu_auto_refund_order_status_id'])) {
-            $data['payu_auto_refund_order_status_id'] = $this->request->post['payu_auto_refund_order_status_id'];
+        if (isset($this->request->post['payment_payu_initiated_order_status_id'])) {
+            $data['payment_payu_initiated_order_status_id'] = $this->request->post['payment_payu_initiated_order_status_id'];
         } else {
-            $data['payu_auto_refund_order_status_id'] = $this->config->get('payu_auto_refund_order_status_id');
+            $data['payment_payu_initiated_order_status_id'] = $this->config->get('payment_payu_initiated_order_status_id');
         }
 
-        if (isset($this->request->post['payu_pending_order_status_id'])) {
-            $data['payu_pending_order_status_id'] = $this->request->post['payu_pending_order_status_id'];
+        if (isset($this->request->post['payment_payu_auto_refund_order_status_id'])) {
+            $data['payment_payu_auto_refund_order_status_id'] = $this->request->post['payment_payu_auto_refund_order_status_id'];
         } else {
-            $data['payu_pending_order_status_id'] = $this->config->get('payu_pending_order_status_id');
+            $data['payment_payu_auto_refund_order_status_id'] = $this->config->get('payment_payu_auto_refund_order_status_id');
         }
 
-        if (isset($this->request->post['payu_bankcode_val'])) {
-            $data['payu_bankcode_val'] = $this->request->post['payu_bankcode_val'];
+        if (isset($this->request->post['payment_payu_pending_order_status_id'])) {
+            $data['payment_payu_pending_order_status_id'] = $this->request->post['payment_payu_pending_order_status_id'];
         } else {
-            $data['payu_bankcode_val'] = $this->config->get('payu_bankcode_val');
+            $data['payment_payu_pending_order_status_id'] = $this->config->get('payment_payu_pending_order_status_id');
+        }
+
+        if (isset($this->request->post['payment_payu_bankcode_val'])) {
+            $data['payment_payu_bankcode_val'] = $this->request->post['payment_payu_bankcode_val'];
+        } else {
+            $data['payment_payu_bankcode_val'] = $this->config->get('payment_payu_bankcode_val');
         }
 
         if (isset($this->error['warning'])) {
@@ -209,7 +209,7 @@ class ControllerExtensionPaymentPayu extends Controller {
         } else {
             $data['error_salt'] = '';
         }
-        
+
         $data['breadcrumbs'] = array();
 
         $data['breadcrumbs'][] = array(
@@ -234,66 +234,66 @@ class ControllerExtensionPaymentPayu extends Controller {
 
         $data['cancel'] = $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'], 'SSL');
         
-        if (isset($this->request->post['payu_merchant'])) {
-            $data['payu_merchant'] = $this->request->post['payu_merchant'];
+        if (isset($this->request->post['payment_payu_merchant'])) {
+            $data['payment_payu_merchant'] = $this->request->post['payment_payu_merchant'];
         } else {
-            $data['payu_merchant'] = $this->config->get('payu_merchant');
+            $data['payment_payu_merchant'] = $this->config->get('payment_payu_merchant');
         }
         
-        if (isset($this->request->post['payu_salt'])) {
-            $data['payu_salt'] = $this->request->post['payu_salt'];
+        if (isset($this->request->post['payment_payu_salt'])) {
+            $data['payment_payu_salt'] = $this->request->post['payment_payu_salt'];
         } else {
-            $data['payu_salt'] = $this->config->get('payu_salt');
+            $data['payment_payu_salt'] = $this->config->get('payment_payu_salt');
         }
         
         if (isset($this->request->post['payu_test'])) {
-            $data['payu_test'] = $this->request->post['payu_test'];
+            $data['payment_payu_test'] = $this->request->post['payment_payu_test'];
         } else {
-            $data['payu_test'] = $this->config->get('payu_test');
+            $data['payment_payu_test'] = $this->config->get('payment_payu_test');
         }
         
         if (isset($this->request->post['payu_total'])) {
-            $data['payu_total'] = $this->request->post['payu_total'];
+            $data['payment_payu_total'] = $this->request->post['payment_payu_total'];
         } else {
-            $data['payu_total'] = $this->config->get('payu_total');
+            $data['payment_payu_total'] = $this->config->get('payment_payu_total');
         }
         
         if (isset($this->request->post['payu_order_status_id'])) {
-            $data['payu_order_status_id'] = $this->request->post['payu_order_status_id'];
+            $data['payment_payu_order_status_id'] = $this->request->post['payment_payu_order_status_id'];
         } else {
-            $data['payu_order_status_id'] = $this->config->get('payu_order_status_id');
+            $data['payment_payu_order_status_id'] = $this->config->get('payment_payu_order_status_id');
         }
         
         $this->load->model('localisation/order_status');
         
         $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
         
-        if (isset($this->request->post['payu_geo_zone_id'])) {
-            $data['payu_geo_zone_id'] = $this->request->post['payu_geo_zone_id'];
+        if (isset($this->request->post['payment_payu_geo_zone_id'])) {
+            $data['payment_payu_geo_zone_id'] = $this->request->post['payment_payu_geo_zone_id'];
         } else {
-            $data['payu_geo_zone_id'] = $this->config->get('payu_geo_zone_id');
+            $data['payment_payu_geo_zone_id'] = $this->config->get('payment_payu_geo_zone_id');
         }
         
         $this->load->model('localisation/geo_zone');
         
         $data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
         
-        if (isset($this->request->post['payu_payment_status'])) {
-            $data['payu_payment_status'] = $this->request->post['payu_payment_status'];
+        if (isset($this->request->post['payment_payu_status'])) {
+            $data['payment_payu_status'] = $this->request->post['payment_payu_status'];
         } else {
-            $data['payu_payment_status'] = $this->config->get('payu_payment_status');
+            $data['payment_payu_status'] = $this->config->get('payment_payu_status');
         }
         
-        if (isset($this->request->post['payu_payment_gateway'])) {
-            $data['payu_payment_gateway'] = $this->request->post['payu_payment_gateway'];
+        if (isset($this->request->post['payment_payu_payment_gateway'])) {
+            $data['payment_payu_payment_gateway'] = $this->request->post['payment_payu_payment_gateway'];
         } else {
-            $data['payu_payment_gateway'] = $this->config->get('payu_payment_gateway');
+            $data['payment_payu_payment_gateway'] = $this->config->get('payment_payu_payment_gateway');
         }
-        
-        if (isset($this->request->post['payu_sort_order'])) {
-            $data['payu_sort_order'] = $this->request->post['payu_sort_order'];
+
+        if (isset($this->request->post['payment_payu_sort_order'])) {
+            $data['payment_payu_sort_order'] = $this->request->post['payment_payu_sort_order'];
         } else {
-            $data['payu_sort_order'] = $this->config->get('payu_sort_order');
+            $data['payment_payu_sort_order'] = $this->config->get('payment_payu_sort_order');
         }
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
@@ -303,17 +303,16 @@ class ControllerExtensionPaymentPayu extends Controller {
     }
 
     private function validate() {
-        
         if (!$this->user->hasPermission('modify', 'extension/payment/payu')) {
             $this->error['warning'] = $this->language->get('error_permission');
             var_dump('hell yeah');die;
         }
         
-        if (!$this->request->post['payu_merchant']) {
+        if (!$this->request->post['payment_payu_merchant']) {
             $this->error['merchant'] = $this->language->get('error_merchant');
         }
         
-        if (!$this->request->post['payu_salt']) {
+        if (!$this->request->post['payment_payu_salt']) {
             $this->error['salt'] = $this->language->get('error_salt');
         }
         
